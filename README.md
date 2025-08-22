@@ -56,3 +56,9 @@ git push origin dev-<your-name-initials>
 ```bash
 npm run dev
 ```
+
+# Important Note
+1.Pull the code each time you start to work to get in sync with the main branch
+```bash
+git pull origin main
+
