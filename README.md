@@ -21,6 +21,36 @@ cd server
 npm i
 ```
 
+# How to push your work?
+
+1. Create a separate branch only once
+
+```bash
+git checkout -b dev-<your-name-initials>
+```
+
+example: `git checkout -b dev-hsr`
+
+2. Stage your changes
+
+```bash
+git add .
+```
+
+3. Commit your changes with a specific commit message
+
+```bash
+git commit -m "your-msg"
+```
+
+4. Push your changes to the repository
+
+```bash
+git push origin dev-<your-name-initials>
+```
+
+5. Open pull request with your branch in the github app itself.
+
 5. Run the code
 
 ```bash
