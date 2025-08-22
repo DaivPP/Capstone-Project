@@ -3,7 +3,7 @@ This repository contains the frontend and the backend code for the Capstone Proj
 # How to start working?
 1.Clone Repository Using :
 ```bash
-git clone https://github.com/yourusername/yourrepo.git
+https://github.com/DaivPP/Capstone-Project.git
 ```
 2. For Frontend -
 
