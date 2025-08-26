@@ -13,7 +13,7 @@ cd client
 3. For Backend -
 
 ```bash
-cd backend middleware
+cd backend
 ```
 4. Install the dependencies
 
