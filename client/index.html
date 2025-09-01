@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedTracker - Advanced Medication Management System</title>
+    <link rel="icon" type="image/svg+xml" href="/pill-icon.svg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --warning: #f72585;
+        --light: #f8f9fa;
+        --dark: #1e2a38;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --white: #ffffff;
+        --sidebar-width: 250px;
+        --border-radius: 12px;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f5f7fb;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .app-container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: var(--dark);
+        color: var(--white);
+        padding: 1.5rem 1rem;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        transition: var(--transition);
+        z-index: 1000;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+      }
+
+      .logo-icon {
+        font-size: 2rem;
+        margin-right: 0.75rem;
+        color: var(--success);
+      }
+
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .nav-menu {
+        list-style: none;
+        margin-top: 2rem;
+      }
+
+      .nav-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--light);
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+      }
+
+      .nav-link:hover, .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--white);
+      }
+
+      .nav-link i {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      /* Main Content Styles */
+      .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 2rem;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 0.75rem;
+      }
+
+      /* Dashboard Grid */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .stat-card {
+        display: flex;
+        align-items: center;
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-right: 1rem;
+      }
+
+      .icon-blue {
+        background-color: rgba(67, 97, 238, 0.15);
+        color: var(--primary);
+      }
+
+      .icon-green {
+        background-color: rgba(76, 201, 240, 0.15);
+        color: var(--success);
+      }
+
+      .icon-pink {
+        background-color: rgba(247, 37, 133, 0.15);
+        color: var(--warning);
+      }
+
+      .icon-purple {
+        background-color: rgba(63, 55, 201, 0.15);
+        color: var(--secondary);
+      }
+
+      .stat-info h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-info p {
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
+
+      /* Medication List */
+      .medication-list {
+        margin-top: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .medication-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        background: var(--white);
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow);
+      }
+
+      .medication-color {
+        width: 12px;
+        height: 40px;
+        border-radius: 6px;
+        margin-right: 1rem;
+      }
+
+      .medication-info {
+        flex: 1;
+      }
+
+      .medication-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .medication-details {
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+
+      .medication-time {
+        font-weight: 500;
+        color: var(--dark);
+        margin-right: 1rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        font-family: inherit;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--secondary);
+      }
+
+      /* Upcoming Medications */
+      .upcoming-medications {
+        margin-top: 2rem;
+      }
+
+      .schedule-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-left: 4px solid var(--primary);
+        background: var(--white);
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+      }
+
+      .schedule-time {
+        font-weight: 600;
+        margin-right: 1.5rem;
+        min-width: 100px;
+      }
+
+      .schedule-details {
+        flex: 1;
+      }
+
+      .schedule-medication {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .schedule-dosage {
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .sidebar {
+          width: 70px;
+          padding: 1rem 0.5rem;
+        }
+        
+        .logo-text, .nav-link span {
+          display: none;
+        }
+        
+        .logo {
+          justify-content: center;
+          padding: 0;
+        }
+        
+        .nav-link {
+          justify-content: center;
+          padding: 0.75rem;
+        }
+        
+        .nav-link i {
+          margin-right: 0;
+        }
+        
+        .main-content {
+          margin-left: 70px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .user-profile {
+          margin-top: 1rem;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .main-content {
+          padding: 1rem;
+        }
+        
+        .stat-card {
+          flex-direction: column;
+          text-align: center;
+        }
+        
+        .stat-icon {
+          margin-right: 0;
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="logo">
+          <i class="fas fa-pills logo-icon"></i>
+          <span class="logo-text">MedTracker</span>
+        </div>
+        
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="fas fa-home"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-pills"></i>
+              <span>Medications</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-bell"></i>
+              <span>Reminders</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-history"></i>
+              <span>History</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-chart-line"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-user-md"></i>
+              <span>Doctors</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="header">
+          <h1 class="page-title">Medication Dashboard</h1>
+          <div class="user-profile">
+            <div class="user-avatar">SD</div>
+            <div class="user-info">
+              <div class="user-name">Student</div>
+              <div class="user-role">Patient</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="dashboard-grid">
+          <div class="card stat-card">
+            <div class="stat-icon icon-blue">
+              <i class="fas fa-pills"></i>
+            </div>
+            <div class="stat-info">
+              <h3>12</h3>
+              <p>Active Medications</p>
+            </div>
+          </div>
+          
+          <div class="card stat-card">
+            <div class="stat-icon icon-green">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>87%</h3>
+              <p>Adherence Rate</p>
+            </div>
+          </div>
+          
+          <div class="card stat-card">
+            <div class="stat-icon icon-pink">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="stat-info">
+              <h3>5</h3>
+              <p>Upcoming Doses</p>
+            </div>
+          </div>
+          
+          <div class="card stat-card">
+            <div class="stat-icon icon-purple">
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-info">
+              <h3>3</h3>
+              <p>Healthcare Providers</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="card medication-list">
+          <h2 class="section-title">Current Medications</h2>
+          
+          <div class="medication-item">
+            <div class="medication-color" style="background-color: #4361ee;"></div>
+            <div class="medication-info">
+              <div class="medication-name">Lisinopril</div>
+              <div class="medication-details">10mg • Once daily • For blood pressure</div>
+            </div>
+            <div class="medication-time">8:00 AM</div>
+            <button class="btn btn-primary">Mark Taken</button>
+          </div>
+          
+          <div class="medication-item">
+            <div class="medication-color" style="background-color: #4cc9f0;"></div>
+            <div class="medication-info">
+              <div class="medication-name">Metformin</div>
+              <div class="medication-details">500mg • Twice daily • For diabetes</div>
+            </div>
+            <div class="medication-time">12:30 PM</div>
+            <button class="btn btn-primary">Mark Taken</button>
+          </div>
+          
+          <div class="medication-item">
+            <div class="medication-color" style="background-color: #f72585;"></div>
+            <div class="medication-info">
+              <div class="medication-name">Atorvastatin</div>
+              <div class="medication-details">20mg • Once daily • For cholesterol</div>
+            </div>
+            <div class="medication-time">6:00 PM</div>
+            <button class="btn btn-primary">Mark Taken</button>
+          </div>
+        </div>
+
+        <!-- Upcoming Medications -->
+        <div class="card upcoming-medications">
+          <h2 class="section-title">Upcoming Medications</h2>
+          
+          <div class="schedule-item">
+            <div class="schedule-time">Today, 2:30 PM</div>
+            <div class="schedule-details">
+              <div class="schedule-medication">Metformin</div>
+              <div class="schedule-dosage">500mg • 1 tablet</div>
+            </div>
+            <button class="btn btn-primary">Snooze</button>
+          </div>
+          
+          <div class="schedule-item">
+            <div class="schedule-time">Today, 8:00 PM</div>
+            <div class="schedule-details">
+              <div class="schedule-medication">Atorvastatin</div>
+              <div class="schedule-dosage">20mg • 1 tablet</div>
+            </div>
+            <button class="btn btn-primary">Snooze</button>
+          </div>
+          
+          <div class="schedule-item">
+            <div class="schedule-time">Tomorrow, 8:00 AM</div>
+            <div class="schedule-details">
+              <div class="schedule-medication">Lisinopril</div>
+              <div class="schedule-dosage">10mg • 1 tablet</div>
+            </div>
+            <button class="btn btn-primary">Snooze</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Simple interactive functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        // Mark medication as taken
+        const markButtons = document.querySelectorAll('.btn-primary');
+        markButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const medicationItem = this.closest('.medication-item, .schedule-item');
+            if (medicationItem) {
+              this.textContent = this.textContent === 'Mark Taken' ? 'Taken ✓' : 'Mark Taken';
+              this.style.backgroundColor = this.textContent === 'Taken ✓' ? '#4bb543' : '#4361ee';
+              
+              if (this.textContent === 'Taken ✓') {
+                medicationItem.style.opacity = '0.7';
+              } else {
+                medicationItem.style.opacity = '1';
+              }
+            }
+          });
+        });
+        
+        // Nav link active state
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
