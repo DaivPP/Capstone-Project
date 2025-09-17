@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify
 import pickle
 import numpy as np
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
@@ -18,9 +19,12 @@ medications = pd.read_csv("medications.csv")
 diets = pd.read_csv("diets.csv")
 workout_df = pd.read_csv("workout_df.csv")
 
-# Drug interactions
-file_path = r"C:\Users\Daivansh\Downloads\db_drug_interactions.csv\db_drug_interactions.csv"
+# =========================
+# 2. Load Drug Interaction Data
+# =========================
+file_path = "db_drug_interactions.csv"  # ✅ keep this file in repo with app.py
 interactions_df = pd.read_csv(file_path)
+
 interactions_df['Drug 1'] = interactions_df['Drug 1'].str.lower().str.strip()
 interactions_df['Drug 2'] = interactions_df['Drug 2'].str.lower().str.strip()
 
@@ -32,7 +36,7 @@ for _, row in interactions_df.iterrows():
     interaction_dict[(d2, d1)] = desc
 
 # =========================
-# Helpers
+# 3. Helper Functions
 # =========================
 def get_predicted_value(patient_symptoms):
     input_vector = np.zeros(len(symptoms_dict))
@@ -43,7 +47,9 @@ def get_predicted_value(patient_symptoms):
 
 def helper(dis):
     desc = " ".join(description[description['Disease'] == dis]['Description'].values)
-    pre = precautions_df[precautions_df['Disease'] == dis][['Precaution_1','Precaution_2','Precaution_3','Precaution_4']].values.flatten().tolist()
+    pre = precautions_df[precautions_df['Disease'] == dis][
+        ['Precaution_1','Precaution_2','Precaution_3','Precaution_4']
+    ].values.flatten().tolist()
     die = diets[diets['Disease'] == dis]['Diet'].tolist()
     wrkout = workout_df[workout_df['disease'] == dis]['workout'].tolist()
     return desc, pre, die, wrkout
@@ -71,13 +77,12 @@ def check_interaction(drug_list, interaction_dict):
     return warnings
 
 # =========================
-# Routes
+# 4. Routes
 # =========================
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# 🔥 NEW API for frontend
 @app.route("/api/ml/predict", methods=["POST"])
 def api_predict():
     try:
@@ -85,7 +90,6 @@ def api_predict():
         symptoms = data.get("symptoms", [])
         allergies = data.get("allergies", [])
 
-        # predict
         predicted_disease = get_predicted_value(symptoms)
         desc, pre, die, wrkout = helper(predicted_disease)
         med = hybrid_recommend(predicted_disease, allergies)
@@ -102,6 +106,13 @@ def api_predict():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# =========================
+# 5. Run App (Render compatible)
+# =========================
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
 
 
 if __name__ == "__main__":
