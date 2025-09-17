@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediTrack - Complete Medication Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+     * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7E6CCA;      
+            --primary-dark: #6A5AAF; 
+            --primary-light: #9F90E0;
+            --secondary: #5CBAA9;    
+            --secondary-dark: #4A9E8F;
+            --accent: #E67E92;       
+            --accent-dark: #D46A7F;  
+            --success: #5CBAA9;      
+            --warning: #E67E92;      
+            --dark: #121212;         
+            --darker: #0A0A0A;       
+            --light: #1E1E24;        
+            --lighter: #2A2A35;      
+            --gray: #8C8C8C;         
+            --light-gray: #3D3D47;   
+            --white: #FFFFFF;        
+            --text-primary: #F5F5F5; 
+            --text-secondary: #B8B8B8; 
+            --sidebar-width: 250px;
+            --border-radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --glow: 0 0 20px rgba(126, 108, 202, 0.5);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        /* 3D Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100px) rotateY(-30deg); opacity: 0; }
+            to { transform: translateX(0) rotateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateZ(-100px); }
+            to { opacity: 1; transform: translateZ(0); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: var(--shadow); }
+            50% { box-shadow: var(--glow); }
+        }
+
+        @keyframes rotate3D {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles with 3D effect */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(30, 30, 36, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            padding: 1.5rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            border-right: 1px solid rgba(126, 108, 202, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-right: 0.75rem;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(92, 186, 169, 0.5);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+            transform-style: preserve-3d;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            transform: translateX(10px) translateZ(10px);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(126, 108, 202, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(135deg, rgba(126, 108, 202, 0.2), rgba(92, 186, 169, 0.2));
+            color: var(--text-primary);
+            transform: translateZ(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(126, 108, 202, 0.3);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            animation: pulse 2s infinite;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(30, 30, 36, 0.8);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(126, 108, 202, 0.1);
+            transition: var(--transition);
+            transform-style: preserve-3d;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) translateZ(10px);
+            box-shadow: var(--glow);
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-right: 1rem;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotateY(180deg) scale(1.1);
+        }
+
+        .icon-primary {
+            background-color: rgba(126, 108, 202, 0.15);
+            color: var(--primary);
+        }
+
+        .icon-secondary {
+            background-color: rgba(92, 186, 169, 0.15);
+            color: var(--secondary);
+        }
+
+        .icon-accent {
+            background-color: rgba(230, 126, 146, 0.15);
+            color: var(--accent);
+        }
+
+        .icon-purple {
+            background-color: rgba(159, 144, 224, 0.15);
+            color: var(--primary-light);
+        }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .stat-card:hover .stat-info h3 {
+            transform: translateZ(10px);
+        }
+
+        .stat-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Page Content Styles */
+        .page-content {
+            display: none;
+            transform-style: preserve-3d;
+        }
+
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+            transform-style: preserve-3d;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(42, 42, 53, 0.5);
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            transform: translateZ(0);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(126, 108, 202, 0.3);
+            transform: translateZ(10px);
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            transform-style: preserve-3d;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .data-table th {
+            background-color: rgba(126, 108, 202, 0.1);
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .data-table tr {
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(126, 108, 202, 0.1);
+            transform: translateZ(5px);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(126, 108, 202, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) translateZ(10px);
+            box-shadow: 0 7px 20px rgba(126, 108, 202, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Medication List */
+        .medication-list {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(92, 186, 169, 0.3);
+        }
+
+        .medication-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background: rgba(30, 30, 36, 0.8);
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            transform-style: preserve-3d;
+            border-left: 4px solid var(--primary);
+        }
+
+        .medication-item:hover {
+            transform: translateX(10px) translateZ(10px);
+            box-shadow: var(--glow);
+        }
+
+        .medication-color {
+            width: 12px;
+            height: 40px;
+            border-radius: 6px;
+            margin-right: 1rem;
+            transition: var(--transition);
+        }
+
+        .medication-item:hover .medication-color {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .medication-info {
+            flex: 1;
+        }
+
+        .medication-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .medication-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .medication-time {
+            font-weight: 500;
+            color: var(--secondary);
+            margin-right: 1rem;
+        }
+
+        /* Upcoming Medications */
+        .upcoming-medications {
+            margin-top: 2rem;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+            background: rgba(30, 30, 36, 0.8);
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .schedule-item:hover {
+            transform: translateX(10px) translateZ(10px);
+            box-shadow: var(--glow);
+        }
+
+        .schedule-time {
+            font-weight: 600;
+            margin-right: 1.5rem;
+            min-width: 100px;
+            color: var(--secondary);
+        }
+
+        .schedule-details {
+            flex: 1;
+        }
+
+        .schedule-medication {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .schedule-dosage {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0.2;
+            animation: float 15s infinite linear;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                padding: 1rem 0.5rem;
+                transform: translateZ(0);
+            }
+            
+            .logo-text, .nav-link span {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+                padding: 0;
+            }
+            
+            .nav-link {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+            
+            .nav-link i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-profile {
+                margin-top: 1rem;
+            }
+            
+            .medication-item, .schedule-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .medication-time, .schedule-time {
+                margin: 0.5rem 0;
+            }
+            
+            .btn {
+                align-self: stretch;
+                margin-top: 0.5rem;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%) translateZ(0);
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0) translateZ(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 1100;
+                background: var(--primary);
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                transition: var(--transition);
+            }
+            
+            .menu-toggle:hover {
+                transform: rotate(90deg) scale(1.1);
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stat-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    .modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+.modal-content {
+  background: #fff; padding: 20px; border-radius: 10px;
+  width: 300px; text-align: center;
+}
+.modal-content input {
+  width: 100%; padding: 10px; margin: 5px 0;
+}
+.modal-content button {
+  margin-top: 10px; padding: 10px; width: 100%;
+}
+.close {
+  float: right; font-size: 20px; cursor: pointer;
+}
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-pills logo-icon"></i>
+        <span class="logo-text">MediTrack</span>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="medications"><i class="fas fa-pills"></i><span>Medications</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="reminders"><i class="fas fa-bell"></i><span>Reminders</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="history"><i class="fas fa-history"></i><span>History</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="reports"><i class="fas fa-chart-line"></i><span>Reports</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="doctors"><i class="fas fa-user-md"></i><span>Doctors</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="prediction"><i class="fas fa-stethoscope"></i><span>Disease Prediction</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+      </ul>
+    </aside>
+    
+    <!-- Main -->
+    <div class="main-content">
+      <div class="header">
+        <h1 class="page-title">MediTrack</h1>
+        <div class="user-profile">
+          <div class="user-avatar">DP</div>
+          <span>Daivansh</span>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="page-content active" id="dashboard">
+        <div class="dashboard-grid">
+          <div class="card">Welcome to your dashboard 🚀</div>
+        </div>
+      </div>
+
+      <!-- ML Prediction Page -->
+      <div class="page-content" id="prediction">
+    <h2 class="section-title">Disease Prediction</h2>
+    <form id="prediction-form">
+        <div class="form-group">
+            <label class="form-label">Enter Symptoms (comma-separated):</label>
+            <input type="text" id="symptoms" class="form-control" placeholder="e.g., fever, cough, headache">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Known Allergies (optional):</label>
+            <input type="text" id="allergies" class="form-control" placeholder="e.g., penicillin, aspirin">
+        </div>
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </form>
+
+    <!-- Styled Results -->
+    <div id="result" style="margin-top:2rem; display:none;">
+        <div class="card">
+            <h3 class="section-title">🧪 Predicted Disease</h3>
+            <p id="res-disease" class="medication-name"></p>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">📖 Description</h3>
+            <p id="res-description"></p>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">🛡️ Precautions</h3>
+            <ul id="res-precautions"></ul>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">💊 Medications (Hybrid Recommendation)</h3>
+            <ul id="res-medications"></ul>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">⚠️ Drug Interactions</h3>
+            <ul id="res-interactions"></ul>
+            <p id="res-safe" class="safe" style="display:none;">✅ No harmful interactions</p>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">🥗 Recommended Diet</h3>
+            <ul id="res-diets"></ul>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title">🏋️ Workout Suggestions</h3>
+            <ul id="res-workout"></ul>
+        </div>
+    </div>
+</div>
+
+
+  <script>
+    // Sidebar navigation
+    const navLinks = document.querySelectorAll(".nav-link");
+    const pages = document.querySelectorAll(".page-content");
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.forEach(l => l.classList.remove("active"));
+        link.classList.add("active");
+        const page = link.getAttribute("data-page");
+        pages.forEach(p => p.classList.remove("active"));
+        document.getElementById(page).classList.add("active");
+      });
+    });
+
+    // ML prediction form handling
+    // Handle Prediction Form
+document.getElementById("prediction-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const symptoms = document.getElementById("symptoms").value.split(",").map(s => s.trim()).filter(s => s);
+    const allergies = document.getElementById("allergies").value.split(",").map(a => a.trim()).filter(a => a);
+
+    const response = await fetch("/api/ml/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptoms, allergies })
+    });
+
+    const data = await response.json();
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.style.display = "block";
+
+    // Fill disease + description
+    document.getElementById("res-disease").innerText = data.disease || "N/A";
+    document.getElementById("res-description").innerText = data.description || "No description available.";
+
+    // Fill precautions
+    const preList = document.getElementById("res-precautions");
+    preList.innerHTML = "";
+    (data.precautions || []).forEach(p => {
+        let li = document.createElement("li");
+        li.innerText = p;
+        preList.appendChild(li);
+    });
+
+    // Fill medications
+    const medList = document.getElementById("res-medications");
+    medList.innerHTML = "";
+    (data.medications || []).forEach(m => {
+        let li = document.createElement("li");
+        li.innerText = m;
+        medList.appendChild(li);
+    });
+
+    // Fill interactions
+    const intList = document.getElementById("res-interactions");
+    intList.innerHTML = "";
+    if (data.interactions && data.interactions.length > 0) {
+        document.getElementById("res-safe").style.display = "none";
+        data.interactions.forEach(i => {
+            let li = document.createElement("li");
+            li.innerText = i;
+            li.style.color = "#E67E92"; // red warning
+            intList.appendChild(li);
+        });
+    } else {
+        document.getElementById("res-safe").style.display = "block";
+    }
+
+    // Fill diets
+    const dietList = document.getElementById("res-diets");
+    dietList.innerHTML = "";
+    (data.diets || []).forEach(d => {
+        let li = document.createElement("li");
+        li.innerText = d;
+        dietList.appendChild(li);
+    });
+
+    // Fill workouts
+    const workoutList = document.getElementById("res-workout");
+    workoutList.innerHTML = "";
+    (data.workout || []).forEach(w => {
+        let li = document.createElement("li");
+        li.innerText = w;
+        workoutList.appendChild(li);
+    });
+});
+
+  </script>
+</body>
+</html>

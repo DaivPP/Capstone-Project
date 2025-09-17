@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h2 { color: #2c3e50; }
+        .section { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        ul { margin: 10px 0 0 20px; }
+        li { margin-bottom: 5px; }
+        a { text-decoration: none; color: #007BFF; }
+        a:hover { text-decoration: underline; }
+        .warning { color: #d9534f; font-weight: bold; }
+        .safe { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Prediction Result</h2>
+
+    <div class="section">
+        <h3>Disease Predicted:</h3>
+        <p><strong>{{ disease }}</strong></p>
+    </div>
+
+    <div class="section">
+        <h3>Description:</h3>
+        <p>{{ description }}</p>
+    </div>
+
+    <div class="section">
+        <h3>Precautions:</h3>
+        <ul>
+            {% for p in precautions %}
+            <li>{{ p }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Medications (Hybrid Recommendation):</h3>
+        <ul>
+            {% for m in medications %}
+            <li>{{ m }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Drug Interaction Warnings:</h3>
+        {% if interactions %}
+            <ul>
+                {% for warning in interactions %}
+                <li class="warning">{{ warning }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="safe">✅ No known harmful interactions found</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Recommended Diet:</h3>
+        <ul>
+            {% for d in diets %}
+            <li>{{ d }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Workout Suggestions:</h3>
+        <ul>
+            {% for w in workout %}
+            <li>{{ w }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="/">← Back to Home</a>
+</body>
+</html>
