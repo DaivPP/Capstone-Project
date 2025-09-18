@@ -1,64 +1,40 @@
-# Capstone Project
-This repository contains the frontend and the backend code for the Capstone Project.
-# How to start working?
-1.Clone Repository Using :
-```bash
-https://github.com/DaivPP/Capstone-Project.git
-```
-2. For Frontend -
+🧠 MediTrack ML Backend
+📌 Overview
 
-```bash
-cd client
-```
-3. For Backend -
+This is the Machine Learning backend for MediTrack.
+It predicts diseases based on user symptoms, provides disease descriptions, precautions, medications, diets, and workout recommendations. It also checks for possible drug–drug interactions.
 
-```bash
-cd backend middleware
-```
-4. Install the dependencies
+Built with Flask + scikit-learn + pandas.
 
-```bash
-npm i
-```
+🚀 Features
 
-# How to push your work?
+Predict disease from entered symptoms (via trained ML model).
 
-1. Create a separate branch only once
+Show description & precautions for predicted disease.
 
-```bash
-git checkout -b dev-<your-name-initials>
-```
+Recommend medications (rule-based + ML hybrid).
 
-example: `git checkout -b dev-hsr`
+Check for harmful drug interactions.
 
-2. Stage your changes
+Suggest diet and workout plans.
 
-```bash
-git add .
-```
+Simple web interface using Flask templates.
 
-3. Commit your changes with a specific commit message
-
-```bash
-git commit -m "your-msg"
-```
-
-4. Push your changes to the repository
-
-```bash
-git push origin dev-<your-name-initials>
-```
-
-5. Open pull request with your branch in the github app itself.
-
-5. Run the code
-
-```bash
-npm run dev
-```
-
-# Important Note
-1.Pull the code each time you start to work to get in sync with the main branch
-```bash
-git pull origin main
+⚙️ Setup Instructions
+1️⃣ Clone repo & go to ml-backend
+git clone https://github.com/<team-repo>.git
+cd <team-repo>/ml-backend
+2️⃣ Create a virtual environment
+python -m venv venv
+# Activate it
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+3️⃣ Install dependencies
+pip install -r requirements.txt
+4️⃣ Run the Flask app
+python app.py
+App will start on:
+👉 http://127.0.0.1:5000
 
