@@ -34,10 +34,10 @@ python -m venv venv
 
 # Activate it
 
-# On Windows:
+On Windows:
 venv\Scripts\activate
 
-# On Mac/Linux:
+On Mac/Linux:
 source venv/bin/activate
 
 3️⃣ Install dependencies
