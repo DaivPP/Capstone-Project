@@ -1,0 +1,58 @@
+@import './animations.css';
+@import './layout.css';
+@import './cards.css';
+@import './forms.css';
+@import './tables.css';
+@import './buttons.css';
+@import './medications.css';
+@import './schedule.css';
+@import './responsive.css';
+
+:root {
+  --primary: #7E6CCA;
+  --primary-dark: #6A5AAF;
+  --primary-light: #9F90E0;
+  --secondary: #5CBAA9;
+  --secondary-dark: #4A9E8F;
+  --accent: #E67E92;
+  --accent-dark: #D46A7F;
+  --success: #5CBAA9;
+  --warning: #E67E92;
+  --dark: #121212;
+  --darker: #0A0A0A;
+  --light: #1E1E24;
+  --lighter: #2A2A35;
+  --gray: #8C8C8C;
+  --light-gray: #3D3D47;
+  --white: #FFFFFF;
+  --text-primary: #F5F5F5;
+  --text-secondary: #B8B8B8;
+  --sidebar-width: 250px;
+  --border-radius: 12px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --glow: 0 0 20px rgba(126, 108, 202, 0.5);
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  perspective: 1000px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

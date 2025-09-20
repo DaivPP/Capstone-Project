@@ -1,0 +1,5 @@
+.form-group { margin-bottom:1.5rem; transform-style: preserve-3d; }
+.form-label { display:block; margin-bottom:.5rem; font-weight:500; color: var(--secondary); }
+.form-control { width:100%; padding:.75rem 1rem; background: rgba(42,42,53,.5); border:1px solid var(--light-gray); border-radius: var(--border-radius); font-family: inherit; font-size:1rem; transition: var(--transition); color: var(--text-primary); transform: translateZ(0); }
+.form-control:focus { outline:none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(126,108,202,.3); transform: translateZ(10px); }
+

@@ -1,0 +1,11 @@
+.medication-list { margin-top:2rem; }
+.section-title { font-size:1.25rem; font-weight:600; margin-bottom:1rem; color: var(--secondary); text-shadow: 0 0 10px rgba(92,186,169,.3); }
+.medication-item { display:flex; align-items:center; padding:1rem; border-radius: var(--border-radius); background: rgba(30,30,36,.8); margin-bottom:1rem; box-shadow: var(--shadow); transition: var(--transition); transform-style: preserve-3d; border-left:4px solid var(--primary); }
+.medication-item:hover { transform: translateX(10px) translateZ(10px); box-shadow: var(--glow); }
+.medication-color { width:12px; height:40px; border-radius:6px; margin-right:1rem; transition: var(--transition); }
+.medication-item:hover .medication-color { transform: scale(1.2) rotate(5deg); }
+.medication-info { flex:1; }
+.medication-name { font-weight:600; margin-bottom:.25rem; color: var(--text-primary); }
+.medication-details { font-size:.85rem; color: var(--text-secondary); }
+.medication-time { font-weight:500; color: var(--secondary); margin-right:1rem; }
+
