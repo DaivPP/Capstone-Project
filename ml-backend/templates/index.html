@@ -715,6 +715,7 @@
   float: right; font-size: 20px; cursor: pointer;
 }
   </style>
+
 </head>
 <body>
   <div class="particles" id="particles"></div>
@@ -728,13 +729,8 @@
       </div>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="medications"><i class="fas fa-pills"></i><span>Medications</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="reminders"><i class="fas fa-bell"></i><span>Reminders</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="history"><i class="fas fa-history"></i><span>History</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="reports"><i class="fas fa-chart-line"></i><span>Reports</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="doctors"><i class="fas fa-user-md"></i><span>Doctors</span></a></li>
         <li class="nav-item"><a href="#" class="nav-link" data-page="prediction"><i class="fas fa-stethoscope"></i><span>Disease Prediction</span></a></li>
-        <li class="nav-item"><a href="#" class="nav-link" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="interaction"><i class="fas fa-exchange-alt"></i><span>Drug Interaction</span></a></li>
       </ul>
     </aside>
     
@@ -743,8 +739,8 @@
       <div class="header">
         <h1 class="page-title">MediTrack</h1>
         <div class="user-profile">
-          <div class="user-avatar">DP</div>
-          <span>Daivansh</span>
+          <div class="user-avatar">US</div>
+          <span>User</span>
         </div>
       </div>
 
@@ -752,64 +748,94 @@
       <div class="page-content active" id="dashboard">
         <div class="dashboard-grid">
           <div class="card">Welcome to your dashboard 🚀</div>
+          <div class="card">
+  <h3 class="section-title">About MediTrack</h3>
+  <p>
+    MediTrack is an AI-powered system that predicts diseases based on symptoms, 
+    recommends medications, and checks for drug–drug interactions. 
+    It helps patients and doctors make informed healthcare decisions.
+  </p>
+</div>
         </div>
       </div>
 
       <!-- ML Prediction Page -->
       <div class="page-content" id="prediction">
-    <h2 class="section-title">Disease Prediction</h2>
-    <form id="prediction-form">
+        <h2 class="section-title">Disease Prediction</h2>
+        <form id="prediction-form">
+            <div class="form-group">
+                <label class="form-label">Enter Symptoms (comma-separated):</label>
+                <input type="text" id="symptoms" class="form-control" placeholder="e.g., redness of eyes, sinus pressure, runny nose, congestion">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Known Allergies (optional):</label>
+                <input type="text" id="allergies" class="form-control" placeholder="e.g., penicillin, aspirin">
+            </div>
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+
+        <!-- Styled Results -->
+        <div id="result" style="margin-top:2rem; display:none;">
+            <div class="card">
+                <h3 class="section-title">🧪 Predicted Disease</h3>
+                <p id="res-disease" class="medication-name"></p>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">📖 Description</h3>
+                <p id="res-description"></p>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">🛡️ Precautions</h3>
+                <ul id="res-precautions"></ul>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">💊 Medications (Hybrid Recommendation)</h3>
+                <ul id="res-medications"></ul>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">⚠️ Drug Interactions</h3>
+                <ul id="res-interactions"></ul>
+                <p id="res-safe" class="safe" style="display:none;">✅ No harmful interactions</p>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">🥗 Recommended Diet</h3>
+                <ul id="res-diets"></ul>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">🏋️ Workout Suggestions</h3>
+                <ul id="res-workout"></ul>
+            </div>
+        </div>
+      </div>
+
+      <!-- Drug Interaction Page -->
+      <div class="page-content" id="interaction">
+        <h2 class="section-title">Drug–Drug Interaction Checker</h2>
         <div class="form-group">
-            <label class="form-label">Enter Symptoms (comma-separated):</label>
-            <input type="text" id="symptoms" class="form-control" placeholder="e.g., fever, cough, headache">
+          <label class="form-label">Select First Medicine:</label>
+          <select id="drug1" class="form-control"></select>
         </div>
         <div class="form-group">
-            <label class="form-label">Known Allergies (optional):</label>
-            <input type="text" id="allergies" class="form-control" placeholder="e.g., penicillin, aspirin">
+          <label class="form-label">Select Second Medicine:</label>
+          <select id="drug2" class="form-control"></select>
         </div>
-        <button type="submit" class="btn btn-primary">Predict</button>
-    </form>
+        <button class="btn btn-primary" onclick="checkInteraction()">Check Interaction</button>
 
-    <!-- Styled Results -->
-    <div id="result" style="margin-top:2rem; display:none;">
-        <div class="card">
-            <h3 class="section-title">🧪 Predicted Disease</h3>
-            <p id="res-disease" class="medication-name"></p>
+        <div id="interaction-result" style="margin-top:2rem; display:none;">
+          <div class="card">
+            <h3 class="section-title">Result</h3>
+            <p id="interaction-text"></p>
+          </div>
         </div>
-
-        <div class="card">
-            <h3 class="section-title">📖 Description</h3>
-            <p id="res-description"></p>
-        </div>
-
-        <div class="card">
-            <h3 class="section-title">🛡️ Precautions</h3>
-            <ul id="res-precautions"></ul>
-        </div>
-
-        <div class="card">
-            <h3 class="section-title">💊 Medications (Hybrid Recommendation)</h3>
-            <ul id="res-medications"></ul>
-        </div>
-
-        <div class="card">
-            <h3 class="section-title">⚠️ Drug Interactions</h3>
-            <ul id="res-interactions"></ul>
-            <p id="res-safe" class="safe" style="display:none;">✅ No harmful interactions</p>
-        </div>
-
-        <div class="card">
-            <h3 class="section-title">🥗 Recommended Diet</h3>
-            <ul id="res-diets"></ul>
-        </div>
-
-        <div class="card">
-            <h3 class="section-title">🏋️ Workout Suggestions</h3>
-            <ul id="res-workout"></ul>
-        </div>
+      </div>
     </div>
-</div>
-
+  </div>
 
   <script>
     // Sidebar navigation
@@ -826,80 +852,112 @@
     });
 
     // ML prediction form handling
-    // Handle Prediction Form
-document.getElementById("prediction-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
+    document.getElementById("prediction-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    const symptoms = document.getElementById("symptoms").value.split(",").map(s => s.trim()).filter(s => s);
-    const allergies = document.getElementById("allergies").value.split(",").map(a => a.trim()).filter(a => a);
+      const symptoms = document.getElementById("symptoms").value.split(",").map(s => s.trim()).filter(s => s);
+      const allergies = document.getElementById("allergies").value.split(",").map(a => a.trim()).filter(a => a);
 
-    const response = await fetch("/api/ml/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ symptoms, allergies })
+      const response = await fetch("/api/ml/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ symptoms, allergies })
+      });
+
+      const data = await response.json();
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+
+      document.getElementById("res-disease").innerText = data.disease || "N/A";
+      document.getElementById("res-description").innerText = data.description || "No description available.";
+
+      const preList = document.getElementById("res-precautions");
+      preList.innerHTML = "";
+      (data.precautions || []).forEach(p => {
+          let li = document.createElement("li");
+          li.innerText = p;
+          preList.appendChild(li);
+      });
+
+      const medList = document.getElementById("res-medications");
+      medList.innerHTML = "";
+      (data.medications || []).forEach(m => {
+          let li = document.createElement("li");
+          li.innerText = m;
+          medList.appendChild(li);
+      });
+
+      const intList = document.getElementById("res-interactions");
+      intList.innerHTML = "";
+      if (data.interactions && data.interactions.length > 0) {
+          document.getElementById("res-safe").style.display = "none";
+          data.interactions.forEach(i => {
+              let li = document.createElement("li");
+              li.innerText = i;
+              li.style.color = "#E67E92";
+              intList.appendChild(li);
+          });
+      } else {
+          document.getElementById("res-safe").style.display = "block";
+      }
+
+      const dietList = document.getElementById("res-diets");
+      dietList.innerHTML = "";
+      (data.diets || []).forEach(d => {
+          let li = document.createElement("li");
+          li.innerText = d;
+          dietList.appendChild(li);
+      });
+
+      const workoutList = document.getElementById("res-workout");
+      workoutList.innerHTML = "";
+      (data.workout || []).forEach(w => {
+          let li = document.createElement("li");
+          li.innerText = w;
+          workoutList.appendChild(li);
+      });
     });
 
-    const data = await response.json();
+    // Load drug list
+    async function loadDrugs() {
+      const res = await fetch("/api/drugs");
+      const drugs = await res.json();
 
-    const resultDiv = document.getElementById("result");
-    resultDiv.style.display = "block";
+      const select1 = document.getElementById("drug1");
+      const select2 = document.getElementById("drug2");
 
-    // Fill disease + description
-    document.getElementById("res-disease").innerText = data.disease || "N/A";
-    document.getElementById("res-description").innerText = data.description || "No description available.";
+      drugs.forEach(d => {
+        let opt1 = document.createElement("option");
+        opt1.value = d;
+        opt1.textContent = d;
+        select1.appendChild(opt1);
 
-    // Fill precautions
-    const preList = document.getElementById("res-precautions");
-    preList.innerHTML = "";
-    (data.precautions || []).forEach(p => {
-        let li = document.createElement("li");
-        li.innerText = p;
-        preList.appendChild(li);
-    });
-
-    // Fill medications
-    const medList = document.getElementById("res-medications");
-    medList.innerHTML = "";
-    (data.medications || []).forEach(m => {
-        let li = document.createElement("li");
-        li.innerText = m;
-        medList.appendChild(li);
-    });
-
-    // Fill interactions
-    const intList = document.getElementById("res-interactions");
-    intList.innerHTML = "";
-    if (data.interactions && data.interactions.length > 0) {
-        document.getElementById("res-safe").style.display = "none";
-        data.interactions.forEach(i => {
-            let li = document.createElement("li");
-            li.innerText = i;
-            li.style.color = "#E67E92"; // red warning
-            intList.appendChild(li);
-        });
-    } else {
-        document.getElementById("res-safe").style.display = "block";
+        let opt2 = document.createElement("option");
+        opt2.value = d;
+        opt2.textContent = d;
+        select2.appendChild(opt2);
+      });
     }
 
-    // Fill diets
-    const dietList = document.getElementById("res-diets");
-    dietList.innerHTML = "";
-    (data.diets || []).forEach(d => {
-        let li = document.createElement("li");
-        li.innerText = d;
-        dietList.appendChild(li);
-    });
+    // Check interaction
+    async function checkInteraction() {
+      const drug1 = document.getElementById("drug1").value;
+      const drug2 = document.getElementById("drug2").value;
 
-    // Fill workouts
-    const workoutList = document.getElementById("res-workout");
-    workoutList.innerHTML = "";
-    (data.workout || []).forEach(w => {
-        let li = document.createElement("li");
-        li.innerText = w;
-        workoutList.appendChild(li);
-    });
-});
+      const res = await fetch("/check_interaction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ drug1, drug2 })
+      });
 
+      const data = await res.json();
+      document.getElementById("interaction-result").style.display = "block";
+      document.getElementById("interaction-text").innerText =
+        `Interaction between ${data.drug1} and ${data.drug2}: ${data.interaction}`;
+    }
+
+    loadDrugs();
   </script>
 </body>
 </html>
