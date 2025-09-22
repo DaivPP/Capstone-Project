@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, jsonify
 import pickle
 import numpy as np
 import pandas as pd
-import os
 
 app = Flask(__name__)
 
@@ -19,12 +18,9 @@ medications = pd.read_csv("medications.csv")
 diets = pd.read_csv("diets.csv")
 workout_df = pd.read_csv("workout_df.csv")
 
-# =========================
-# 2. Load Drug Interaction Data
-# =========================
-file_path = "db_drug_interactions.csv"  # ✅ keep this file in repo with app.py
+# Drug interactions
+file_path = r"C:\\Users\\Daivansh\\Downloads\\db_drug_interactions.csv\\db_drug_interactions.csv"
 interactions_df = pd.read_csv(file_path)
-
 interactions_df['Drug 1'] = interactions_df['Drug 1'].str.lower().str.strip()
 interactions_df['Drug 2'] = interactions_df['Drug 2'].str.lower().str.strip()
 
@@ -36,7 +32,7 @@ for _, row in interactions_df.iterrows():
     interaction_dict[(d2, d1)] = desc
 
 # =========================
-# 3. Helper Functions
+# Helpers
 # =========================
 def get_predicted_value(patient_symptoms):
     input_vector = np.zeros(len(symptoms_dict))
@@ -47,9 +43,7 @@ def get_predicted_value(patient_symptoms):
 
 def helper(dis):
     desc = " ".join(description[description['Disease'] == dis]['Description'].values)
-    pre = precautions_df[precautions_df['Disease'] == dis][
-        ['Precaution_1','Precaution_2','Precaution_3','Precaution_4']
-    ].values.flatten().tolist()
+    pre = precautions_df[precautions_df['Disease'] == dis][['Precaution_1','Precaution_2','Precaution_3','Precaution_4']].values.flatten().tolist()
     die = diets[diets['Disease'] == dis]['Diet'].tolist()
     wrkout = workout_df[workout_df['disease'] == dis]['workout'].tolist()
     return desc, pre, die, wrkout
@@ -77,12 +71,13 @@ def check_interaction(drug_list, interaction_dict):
     return warnings
 
 # =========================
-# 4. Routes
+# Routes
 # =========================
 @app.route("/")
 def home():
     return render_template("index.html")
 
+# 🔹 ML Prediction API
 @app.route("/api/ml/predict", methods=["POST"])
 def api_predict():
     try:
@@ -90,6 +85,7 @@ def api_predict():
         symptoms = data.get("symptoms", [])
         allergies = data.get("allergies", [])
 
+        # predict
         predicted_disease = get_predicted_value(symptoms)
         desc, pre, die, wrkout = helper(predicted_disease)
         med = hybrid_recommend(predicted_disease, allergies)
@@ -107,12 +103,26 @@ def api_predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# =========================
-# 5. Run App (Render compatible)
-# =========================
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+# 🔹 NEW: Get drug list for dropdown
+@app.route("/api/drugs")
+def get_drugs():
+    drugs = sorted(set(interactions_df['Drug 1']).union(set(interactions_df['Drug 2'])))
+    return jsonify(drugs)
+
+# 🔹 NEW: Check interaction between two selected drugs
+@app.route("/check_interaction", methods=["POST"])
+def check_interaction_api():
+    data = request.get_json()
+    drug1, drug2 = data.get("drug1", "").lower().strip(), data.get("drug2", "").lower().strip()
+
+    if (drug1, drug2) in interaction_dict:
+        result = interaction_dict[(drug1, drug2)]
+    elif (drug2, drug1) in interaction_dict:
+        result = interaction_dict[(drug2, drug1)]
+    else:
+        result = "No data available"
+
+    return jsonify({"drug1": drug1.title(), "drug2": drug2.title(), "interaction": result})
 
 
 if __name__ == "__main__":
