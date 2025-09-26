@@ -25,7 +25,7 @@ function DoctorsPage() {
             <input className="w-full border rounded p-2" value={form.specialty} onChange={(e)=>setForm({...form,specialty:e.target.value})} placeholder="e.g., Cardiologist" />
           </div>
           <div className="md:col-span-3">
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded">Add Doctor</button>
+            <button className="btn btn-primary">Add Doctor</button>
           </div>
         </form>
       </div>
