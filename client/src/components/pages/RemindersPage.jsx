@@ -25,7 +25,7 @@ function RemindersPage() {
             <input type="time" className="w-full border rounded p-2" value={form.time} onChange={(e)=>setForm({...form,time:e.target.value})} />
           </div>
           <div className="md:col-span-2">
-            <button className="px-4 py-2 bg-indigo-600 text-white rounded">Add Reminder</button>
+            <button className="btn btn-primary">Add Reminder</button>
           </div>
         </form>
       </div>
@@ -50,5 +50,3 @@ function RemindersPage() {
 }
 
 export default RemindersPage;
-
-
