@@ -1,9 +1,23 @@
 @import "tailwindcss";
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+
+/* Global background image */
+body {
+  background-image: url('https://wallpaperbat.com/img/304560-doctor-wallpaper.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #ffffff;
+}
+
+/* Optional: ensure app content has readable text color by default */
+html, body, #root {
+  height: 100%;
+}
+
+/* Utilities layer: project-specific text color utilities */
+@layer utilities {
+  .text-app-white { color: #ffffff !important; }
+  .text-app-violet { color: #7c3aed !important; }
+  .text-app-brown { color: #8b4513 !important; }
 }
