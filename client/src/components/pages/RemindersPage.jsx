@@ -1,14 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createReminder, getReminders, deleteReminder } from '../services/Api.js';
 
 function RemindersPage() {
   const [form, setForm] = useState({ medication: '', time: '' });
   const [reminders, setReminders] = useState([]);
 
-  const submit = (e) => {
+  // Load reminders on mount
+  useEffect(() => {
+    loadReminders();
+  }, []);
+
+  const loadReminders = async () => {
+    try {
+      const res = await getReminders();
+      setReminders(res.data);
+    } catch (err) {
+      console.error("Error loading reminders:", err);
+    }
+  };
+
+  const submit = async (e) => {
     e.preventDefault();
+
     if (!form.medication || !form.time) return;
-    setReminders([...reminders, { id: Date.now(), ...form }]);
-    setForm({ medication: '', time: '' });
+
+    try {
+      await createReminder(form); // sends { medication, time }
+      setForm({ medication: '', time: '' });
+      loadReminders(); // refresh list after adding
+    } catch (err) {
+      console.error("Error creating reminder:", err.response?.data || err.message);
+    }
+  };
+
+  const remove = async (id) => {
+    try {
+      await deleteReminder(id);
+      loadReminders();
+    } catch (err) {
+      console.error("Error deleting reminder:", err.response?.data || err.message);
+    }
   };
 
   return (
@@ -18,14 +49,25 @@ function RemindersPage() {
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={submit}>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Medication</label>
-            <input className="w-full border rounded p-2" value={form.medication} onChange={(e)=>setForm({...form,medication:e.target.value})} placeholder="Select medication" />
+            <input
+              type="text"
+              className="w-full border rounded p-2"
+              value={form.medication}
+              onChange={(e) => setForm({ ...form, medication: e.target.value })}
+              placeholder="Enter medication"
+            />
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">Time</label>
-            <input type="time" className="w-full border rounded p-2" value={form.time} onChange={(e)=>setForm({...form,time:e.target.value})} />
+            <input
+              type="time"
+              className="w-full border rounded p-2"
+              value={form.time}
+              onChange={(e) => setForm({ ...form, time: e.target.value })}
+            />
           </div>
           <div className="md:col-span-2">
-            <button className="btn btn-primary">Add Reminder</button>
+            <button type="submit" className="btn btn-primary">Add Reminder</button>
           </div>
         </form>
       </div>
@@ -37,9 +79,17 @@ function RemindersPage() {
         ) : (
           <ul className="space-y-2">
             {reminders.map(r => (
-              <li key={r.id} className="border rounded p-3 flex justify-between">
-                <div className="font-medium">{r.medication}</div>
-                <div className="text-sm text-gray-500">{r.time}</div>
+              <li key={r._id} className="border rounded p-3 flex justify-between items-center">
+                <div>
+                  <div className="font-medium">{r.medication}</div>
+                  <div className="text-sm text-gray-500">{r.time}</div>
+                </div>
+                <button
+                  onClick={() => remove(r._id)}
+                  className="text-red-500 text-sm"
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>

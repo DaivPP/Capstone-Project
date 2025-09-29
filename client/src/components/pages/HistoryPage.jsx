@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createHistory, getHistory } from '../services/Api.js';
 
 function HistoryPage() {
   const [range, setRange] = useState('7');

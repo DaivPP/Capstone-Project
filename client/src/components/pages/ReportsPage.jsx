@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createReport, getReports } from '../services/Api.js';
 
 function ReportsPage() {
   const [type, setType] = useState('adherence');

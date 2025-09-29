@@ -40,6 +40,17 @@ function Sidebar() {
             Doctors
           </NavLink>
         </li>
+        <li className="nav-item">
+  <a 
+    className="nav-link block px-3 py-2 rounded" 
+    href="https://meditrack-complete-medication-management.onrender.com" 
+    target="_blank" 
+    rel="noopener noreferrer"
+  >
+    Disease Prediction
+  </a>
+</li>
+
       </ul>
     </aside>
   );
