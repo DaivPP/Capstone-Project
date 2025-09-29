@@ -19,7 +19,7 @@ diets = pd.read_csv("diets.csv")
 workout_df = pd.read_csv("workout_df.csv")
 
 # Drug interactions
-file_path = r"C:\\Users\\Daivansh\\Downloads\\db_drug_interactions.csv\\db_drug_interactions.csv"
+file_path = ml-backend/db_drug_interactions.csv
 interactions_df = pd.read_csv(file_path)
 interactions_df['Drug 1'] = interactions_df['Drug 1'].str.lower().str.strip()
 interactions_df['Drug 2'] = interactions_df['Drug 2'].str.lower().str.strip()
