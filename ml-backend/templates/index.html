@@ -837,127 +837,169 @@
     </div>
   </div>
 
-  <script>
-    // Sidebar navigation
-    const navLinks = document.querySelectorAll(".nav-link");
-    const pages = document.querySelectorAll(".page-content");
-    navLinks.forEach(link => {
-      link.addEventListener("click", () => {
-        navLinks.forEach(l => l.classList.remove("active"));
-        link.classList.add("active");
-        const page = link.getAttribute("data-page");
-        pages.forEach(p => p.classList.remove("active"));
-        document.getElementById(page).classList.add("active");
+  // Sidebar navigation
+<script>
+const navLinks = document.querySelectorAll(".nav-link");
+const pages = document.querySelectorAll(".page-content");
+navLinks.forEach(link => {
+  link.addEventListener("click", () => {
+    navLinks.forEach(l => l.classList.remove("active"));
+    link.classList.add("active");
+    const page = link.getAttribute("data-page");
+    pages.forEach(p => p.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+  });
+});
+
+// ML prediction form handling
+document.getElementById("prediction-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const symptoms = document.getElementById("symptoms").value.split(",").map(s => s.trim()).filter(s => s);
+  const allergies = document.getElementById("allergies").value.split(",").map(a => a.trim()).filter(a => a);
+
+  const response = await fetch("/api/ml/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ symptoms, allergies })
+  });
+
+  const data = await response.json();
+
+  const resultDiv = document.getElementById("result");
+  resultDiv.style.display = "block";
+
+  document.getElementById("res-disease").innerText = data.disease || "N/A";
+  document.getElementById("res-description").innerText = data.description || "No description available.";
+
+  const preList = document.getElementById("res-precautions");
+  preList.innerHTML = "";
+  (data.precautions || []).forEach(p => {
+      let li = document.createElement("li");
+      li.innerText = p;
+      preList.appendChild(li);
+  });
+
+  const medList = document.getElementById("res-medications");
+  medList.innerHTML = "";
+  (data.medications || []).forEach(m => {
+      let li = document.createElement("li");
+      li.innerText = m;
+      medList.appendChild(li);
+  });
+
+  const intList = document.getElementById("res-interactions");
+  intList.innerHTML = "";
+  if (data.interactions && data.interactions.length > 0) {
+      document.getElementById("res-safe").style.display = "none";
+      data.interactions.forEach(i => {
+          let li = document.createElement("li");
+          li.innerText = i;
+          li.style.color = "#E67E92";
+          intList.appendChild(li);
       });
+  } else {
+      document.getElementById("res-safe").style.display = "block";
+  }
+
+  const dietList = document.getElementById("res-diets");
+  dietList.innerHTML = "";
+  (data.diets || []).forEach(d => {
+      let li = document.createElement("li");
+      li.innerText = d;
+      dietList.appendChild(li);
+  });
+
+  const workoutList = document.getElementById("res-workout");
+  workoutList.innerHTML = "";
+  (data.workout || []).forEach(w => {
+      let li = document.createElement("li");
+      li.innerText = w;
+      workoutList.appendChild(li);
+  });
+});
+
+// Load drug list for first dropdown
+async function loadDrugs() {
+  const res = await fetch("/api/drugs");
+  const drugs = await res.json();
+
+  const select1 = document.getElementById("drug1");
+  select1.innerHTML = '<option value="">Select Drug 1</option>'; // Reset with placeholder
+  drugs.forEach(d => {
+    let opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d.charAt(0).toUpperCase() + d.slice(1); // Capitalize
+    select1.appendChild(opt);
+  });
+
+  // Initialize drug2 as disabled
+  const select2 = document.getElementById("drug2");
+  select2.innerHTML = '<option value="">Select Drug 2</option>';
+  select2.disabled = true;
+}
+
+// Update second dropdown based on first drug selection
+async function updateDrug2Options() {
+  const drug1 = document.getElementById("drug1").value;
+  const select2 = document.getElementById("drug2");
+  select2.innerHTML = '<option value="">Select Drug 2</option>'; // Reset
+  select2.disabled = true; // Disable by default
+
+  if (!drug1) {
+    document.getElementById("interaction-result").style.display = "none"; // Hide result if no drug selected
+    return;
+  }
+
+  const res = await fetch(`/api/interactions?drug=${encodeURIComponent(drug1)}`);
+  const relatedDrugs = await res.json();
+
+  if (relatedDrugs.length > 0) {
+    select2.disabled = false;
+    relatedDrugs.forEach(d => {
+      let opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d.charAt(0).toUpperCase() + d.slice(1); // Capitalize
+      select2.appendChild(opt);
     });
+  } else {
+    // Optional: Show a message if no interactions are available
+    document.getElementById("interaction-result").style.display = "block";
+    document.getElementById("interaction-text").innerText = "No interactions available for " + drug1.charAt(0).toUpperCase() + drug1.slice(1);
+  }
+}
 
-    // ML prediction form handling
-    document.getElementById("prediction-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
+// Check interaction
+async function checkInteraction() {
+  const drug1 = document.getElementById("drug1").value;
+  const drug2 = document.getElementById("drug2").value;
 
-      const symptoms = document.getElementById("symptoms").value.split(",").map(s => s.trim()).filter(s => s);
-      const allergies = document.getElementById("allergies").value.split(",").map(a => a.trim()).filter(a => a);
+  if (!drug1 || !drug2) {
+    alert("Please select both medicines.");
+    return;
+  }
+  if (drug1 === drug2) {
+    alert("Please select two different medicines.");
+    return;
+  }
 
-      const response = await fetch("/api/ml/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ symptoms, allergies })
-      });
+  const res = await fetch("/check_interaction", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ drug1, drug2 })
+  });
 
-      const data = await response.json();
+  const data = await res.json();
+  document.getElementById("interaction-result").style.display = "block";
+  document.getElementById("interaction-text").innerText =
+    `Interaction between ${data.drug1} and ${data.drug2}: ${data.interaction}`;
+}
 
-      const resultDiv = document.getElementById("result");
-      resultDiv.style.display = "block";
-
-      document.getElementById("res-disease").innerText = data.disease || "N/A";
-      document.getElementById("res-description").innerText = data.description || "No description available.";
-
-      const preList = document.getElementById("res-precautions");
-      preList.innerHTML = "";
-      (data.precautions || []).forEach(p => {
-          let li = document.createElement("li");
-          li.innerText = p;
-          preList.appendChild(li);
-      });
-
-      const medList = document.getElementById("res-medications");
-      medList.innerHTML = "";
-      (data.medications || []).forEach(m => {
-          let li = document.createElement("li");
-          li.innerText = m;
-          medList.appendChild(li);
-      });
-
-      const intList = document.getElementById("res-interactions");
-      intList.innerHTML = "";
-      if (data.interactions && data.interactions.length > 0) {
-          document.getElementById("res-safe").style.display = "none";
-          data.interactions.forEach(i => {
-              let li = document.createElement("li");
-              li.innerText = i;
-              li.style.color = "#E67E92";
-              intList.appendChild(li);
-          });
-      } else {
-          document.getElementById("res-safe").style.display = "block";
-      }
-
-      const dietList = document.getElementById("res-diets");
-      dietList.innerHTML = "";
-      (data.diets || []).forEach(d => {
-          let li = document.createElement("li");
-          li.innerText = d;
-          dietList.appendChild(li);
-      });
-
-      const workoutList = document.getElementById("res-workout");
-      workoutList.innerHTML = "";
-      (data.workout || []).forEach(w => {
-          let li = document.createElement("li");
-          li.innerText = w;
-          workoutList.appendChild(li);
-      });
-    });
-
-    // Load drug list
-    async function loadDrugs() {
-      const res = await fetch("/api/drugs");
-      const drugs = await res.json();
-
-      const select1 = document.getElementById("drug1");
-      const select2 = document.getElementById("drug2");
-
-      drugs.forEach(d => {
-        let opt1 = document.createElement("option");
-        opt1.value = d;
-        opt1.textContent = d;
-        select1.appendChild(opt1);
-
-        let opt2 = document.createElement("option");
-        opt2.value = d;
-        opt2.textContent = d;
-        select2.appendChild(opt2);
-      });
-    }
-
-    // Check interaction
-    async function checkInteraction() {
-      const drug1 = document.getElementById("drug1").value;
-      const drug2 = document.getElementById("drug2").value;
-
-      const res = await fetch("/check_interaction", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ drug1, drug2 })
-      });
-
-      const data = await res.json();
-      document.getElementById("interaction-result").style.display = "block";
-      document.getElementById("interaction-text").innerText =
-        `Interaction between ${data.drug1} and ${data.drug2}: ${data.interaction}`;
-    }
-
-    loadDrugs();
-  </script>
+// Initialize on page load
+window.onload = function() {
+  loadDrugs();
+  document.getElementById("drug1").addEventListener("change", updateDrug2Options);
+};
+</script>
 </body>
 </html>
